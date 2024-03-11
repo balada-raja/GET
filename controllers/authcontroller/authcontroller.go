@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/balada-raja/GET/pkg/config"
 	"github.com/balada-raja/GET/helper"
 	"github.com/balada-raja/GET/models"
+	"github.com/balada-raja/GET/pkg/config"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -51,7 +51,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	claims := &config.JWTClaim{
 		Email: user.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer: "go-jwt-mux",
+			Issuer:    "go-jwt-mux",
 			ExpiresAt: jwt.NewNumericDate(expTime),
 		},
 	}
@@ -60,7 +60,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	tokenAlgo := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	//signed token
 	token, err := tokenAlgo.SignedString(config.JWT_KEY)
-	if err != nil{
+	if err != nil {
 		response := map[string]string{"message": "email atau password salah"}
 		helper.ResponseJSON(w, http.StatusInternalServerError, response)
 		return
@@ -68,9 +68,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	//set token ke cookie
 	http.SetCookie(w, &http.Cookie{
-		Name: "token",
-		Path:  "/",
-		Value: token,
+		Name:     "token",
+		Path:     "/",
+		Value:    token,
 		HttpOnly: true,
 	})
 
@@ -108,11 +108,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 func Logout(w http.ResponseWriter, r *http.Request) {
 	//hapus token
 	http.SetCookie(w, &http.Cookie{
-		Name: "token",
-		Path:  "/",
-		Value: "",
+		Name:     "token",
+		Path:     "/",
+		Value:    "",
 		HttpOnly: true,
-		MaxAge: -1,
+		MaxAge:   -1,
 	})
 
 	response := map[string]string{"message": "Logout berhasil"}

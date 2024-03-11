@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/balada-raja/GET/controllers/authcontroller"
-	"github.com/balada-raja/GET/controllers/kendaraancontroller"
+	"github.com/balada-raja/GET/controllers/vehiclecontroller"
 	"github.com/balada-raja/GET/controllers/ordercontroller"
-	"github.com/balada-raja/GET/controllers/penyedia_jasacontroller"
+	"github.com/balada-raja/GET/controllers/vendorcontroller"
 	"github.com/balada-raja/GET/controllers/userscontroller"
 	"github.com/balada-raja/GET/models"
 
@@ -34,18 +34,18 @@ func main() {
 	rest.DELETE("/api/users/:id", userscontroller.Delete)
 
 	//route untuk penyedia jasa
-	rest.GET("/api/penyedia_jasa", penyedia_jasacontroller.Index)
-	rest.GET("/api/penyedia_jasa/:id", penyedia_jasacontroller.Show)
-	rest.POST("/api/penyedia_jasa", penyedia_jasacontroller.Create)
-	rest.PUT("/api/penyedia_jasa/:id", penyedia_jasacontroller.Update)
-	rest.DELETE("/api/penyedia_jasa", penyedia_jasacontroller.Delete)
+	rest.GET("/api/vendor", vendorcontroller.Index)
+	rest.GET("/api/vendor/:id", vendorcontroller.Show)
+	rest.POST("/api/vendor", vendorcontroller.Create)
+	rest.PUT("/api/vendor/:id", vendorcontroller.Update)
+	rest.DELETE("/api/vendor", vendorcontroller.Delete)
 
 	//route untuk kendaraan
-	rest.GET("/api/kendaraan", kendaraancontroller.Index)
-	rest.GET("/api/kendaraan/:id", kendaraancontroller.Show)
-	rest.POST("/api/kendaraan", kendaraancontroller.Create)
-	rest.PUT("/api/kendaraan/:id", kendaraancontroller.Update)
-	rest.DELETE("/api/kendaraan", kendaraancontroller.Delete)
+	rest.GET("/api/vehicle", vehiclecontroller.Index)
+	rest.GET("/api/vehicle/:id", vehiclecontroller.Show)
+	rest.POST("/api/vehicle", vehiclecontroller.Create)
+	rest.PUT("/api/vehicle/:id", vehiclecontroller.Update)
+	rest.DELETE("/api/vehicle", vehiclecontroller.Delete)
 
 	//route untuk order
 	rest.GET("/api/order", ordercontroller.Index)

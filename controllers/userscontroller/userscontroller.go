@@ -64,7 +64,7 @@ func Update(c *gin.Context) {
 func Delete(c *gin.Context) {
 	var users models.Users
 
-	var input struct{
+	var input struct {
 		Id json.Number
 	}
 

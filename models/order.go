@@ -8,15 +8,15 @@ const (
 )
 
 type Order struct {
-	Id             int64 `gorm:"primary_key" json:"id"`
-	IdUser         int64
-	IdKendaraan    int64
-	IdPenyediaJasa int64
-	Status         Informasi `gorm:"type:enum('Proses', 'Selesai');default:'Proses'" json:"status"`
-	IdDetailOrder  int64
+	Id            int64     `gorm:"primary_key" json:"id"`
+	IdUser        int64     `json:"id_user" binding:"required"`
+	IdVehicle     int64     `json:"id_vehicle" binding:"required"`
+	IdVendor      int64     `json:"id_vendor" binding:"required"`
+	Status        Informasi `gorm:"type:enum('Proses', 'Selesai');default:'Proses'" json:"status"`
+	IdDetailOrder int64     `json:"id_detail_order" binding:"required"`
 
-	Users        Users        `gorm:"foreignKey:IdUser"`
-	Kendaraan    Kendaraan    `gorm:"foreignKey:IdKendaraan"`
-	PenyediaJasa PenyediaJasa `gorm:"foreignKey:IdPenyediaJasa"`
-	DetailOrder  DetailOrder  `gorm:"foreignKey:IdDetailOrder"`
+	Users       Users       `gorm:"foreignKey:id_user"`
+	Vehicle     Vehicle     `gorm:"foreignKey:id_vehicle"`
+	Vendor      Vendor      `gorm:"foreignKey:id_vendor"`
+	DetailOrder DetailOrder `gorm:"foreignKey:id_detail_order"`
 }

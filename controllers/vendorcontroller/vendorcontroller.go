@@ -1,4 +1,4 @@
-package penyedia_jasacontroller
+package vendorcontroller
 
 import (
 	"encoding/json"
@@ -10,29 +10,29 @@ import (
 )
 
 func Create(c *gin.Context) {
-	var PenyediaJasa models.PenyediaJasa
+	var vendor models.Vendor
 
-	if err := c.ShouldBindJSON(&PenyediaJasa); err != nil {
+	if err := c.ShouldBindJSON(&vendor); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	models.DB.Create(&PenyediaJasa)
-	c.JSON(http.StatusOK, gin.H{"penyedia_jasa": PenyediaJasa})
+	models.DB.Create(&vendor)
+	c.JSON(http.StatusOK, gin.H{"vendor": vendor})
 
 }
 
 func Index(c *gin.Context) {
-	var PenyediaJasa []models.PenyediaJasa
+	var vendor []models.Vendor
 
-	models.DB.Find(&PenyediaJasa)
-	c.JSON(http.StatusOK, gin.H{"penyedia_jasa": PenyediaJasa})
+	models.DB.Find(&vendor)
+	c.JSON(http.StatusOK, gin.H{"vendor": vendor})
 }
 
 func Show(c *gin.Context) {
-	var PenyediaJasa []models.PenyediaJasa
+	var vendor []models.Vendor
 	id := c.Param("id")
 
-	if err := models.DB.First(&PenyediaJasa, id).Error; err != nil {
+	if err := models.DB.First(&vendor, id).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Data tidak ditemukan"})
@@ -43,26 +43,26 @@ func Show(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{"penyedia_jasa": PenyediaJasa})
+	c.JSON(http.StatusOK, gin.H{"vendor": vendor})
 }
 
 func Update(c *gin.Context) {
-	var PenyediaJasa models.PenyediaJasa
+	var vendor models.Vendor
 	id := c.Param("id")
-	if err := c.ShouldBindJSON(&PenyediaJasa); err != nil {
+	if err := c.ShouldBindJSON(&vendor); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
-	if models.DB.Model(&PenyediaJasa).Where("id = ?", id).Updates(&PenyediaJasa).RowsAffected == 0 {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Tidak dapat mengupadate penyedia jasa"})
+	if models.DB.Model(&vendor).Where("id = ?", id).Updates(&vendor).RowsAffected == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Tidak dapat mengupadate data"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Data berhasil diperbarui"})
 }
 
 func Delete(c *gin.Context) {
-	var PenyediaJasa models.PenyediaJasa
+	var vendor models.Vendor
 
 	var input struct {
 		Id json.Number
@@ -75,8 +75,8 @@ func Delete(c *gin.Context) {
 	}
 
 	id, _ := input.Id.Int64()
-	if models.DB.Delete(&PenyediaJasa, id).RowsAffected == 0 {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Tidak dapat menghapus penyedia jasa"})
+	if models.DB.Delete(&vendor, id).RowsAffected == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Tidak dapat menghapus data"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Data berhasil dihapus"})

@@ -9,26 +9,17 @@ import (
 	"gorm.io/gorm"
 )
 
-// type output struct {
-// 	Id             int64  `json:"id"`
-// 	IdUser         int64  `json:"id_user"`
-// 	IdKendaraan    int64  `json:"id_kendaraan"`
-// 	IdPenyediaJasa int64  `json:"id_penyedia_jasa"`
-// 	Status         string `json:"status"`
-// 	IdDetailOrder  int64  `json:"id_detail_order"`
-// }
-
 func Create(c *gin.Context) {
 	var input struct {
-		IdUser          int64   `json:"id_user"`
-		IdKendaraan     int64   `json:"id_kendaraan"`
-		IdPenyediaJasa  int64   `json:"id_penyedia_jasa"`
-		Status          string  `json:"status"`
-		TglPeminjaman   string  `json:"tgl_peminjaman"`
-		TglPengembalian string  `json:"tgl_pengembalian"`
-		DurasiSewa      int     `json:"durasi_sewa"`
-		Total           float64 `json:"total"`
-		Jaminan         string  `json:"jaminan"`
+		IdUser         int64   `json:"id_user"`
+		IdVehicle      int64   `json:"id_vehicle"`
+		IdVendor       int64   `json:"id_vendor"`
+		Status         string  `json:"status"`
+		BorrowDate     string  `json:"borrow_date"`
+		ReturnDate     string  `json:"return_date"`
+		BorrowDuration int     `json:"borrow_duration"`
+		Total          float64 `json:"total"`
+		Guarantee      string  `json:"guarantee"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -37,11 +28,11 @@ func Create(c *gin.Context) {
 	}
 
 	DetailOrder := models.DetailOrder{
-		TglPeminjaman:   input.TglPeminjaman,
-		TglPengembalian: input.TglPengembalian,
-		DurasiSewa:      input.DurasiSewa,
-		Total:           input.Total,
-		Jaminan:         input.Jaminan,
+		BorrowDate:     input.BorrowDate,
+		ReturnDate:     input.ReturnDate,
+		BorrowDuration: input.BorrowDuration,
+		Total:          input.Total,
+		Guarantee:      input.Guarantee,
 	}
 	if err := models.DB.Create(&DetailOrder).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to create detail order"})
@@ -53,23 +44,23 @@ func Create(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Users not found"})
 		return
 	}
-	var Kendaraan models.Kendaraan
-	if err := models.DB.First(&Kendaraan, input.IdKendaraan).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Kendaraan not found"})
+	var vehicle models.Vehicle
+	if err := models.DB.First(&vehicle, input.IdVehicle).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "vehicle not found"})
 		return
 	}
-	var PenyediaJasa models.PenyediaJasa
-	if err := models.DB.First(&PenyediaJasa, input.IdPenyediaJasa).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Peneyedia jasa not found"})
+	var vendor models.Vendor
+	if err := models.DB.First(&vendor, input.IdVendor).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "vendor not found"})
 		return
 	}
 
 	Order := models.Order{
-		IdUser:         input.IdUser,
-		IdKendaraan:    input.IdKendaraan,
-		IdPenyediaJasa: input.IdPenyediaJasa,
-		Status:         models.Informasi(input.Status),
-		IdDetailOrder:  DetailOrder.Id,
+		IdUser:        input.IdUser,
+		IdVehicle:     input.IdVehicle,
+		IdVendor:      input.IdVendor,
+		Status:        models.Informasi(input.Status),
+		IdDetailOrder: DetailOrder.Id,
 	}
 	if err := models.DB.Create(&Order).Error; err != nil {
 		// jika gagal, hapus entri yang sudah dibuat dalam tabel detail_order
@@ -83,7 +74,7 @@ func Create(c *gin.Context) {
 func Index(c *gin.Context) {
 	var Order []models.Order
 
-	models.DB.Select("id, id_user, id_kendaraan, id_penyedia_jasa, status").Find(&Order)
+	models.DB.Select("id, id_user, id_vehicle, id_vendor, status").Find(&Order)
 
 	if err := models.DB.Preload("DetailOrder").Find(&Order).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to fetch orders"})
@@ -105,7 +96,7 @@ func Index(c *gin.Context) {
 	// 	})
 	// }
 
-	c.JSON(http.StatusOK, gin.H{"Message": Order,})
+	c.JSON(http.StatusOK, gin.H{"Message": Order})
 }
 
 func Show(c *gin.Context) {
@@ -130,15 +121,15 @@ func Update(c *gin.Context) {
 	id := c.Param("id")
 
 	var input struct {
-		IdUser          *int64   `json:"id_user"`
-		IdKendaraan     *int64   `json:"id_kendaraan"`
-		IdPenyediaJasa  *int64   `json:"id_penyedia_jasa"`
-		Status          *string  `json:"status"`
-		TglPeminjaman   *string  `json:"tgl_peminjaman"`
-		TglPengembalian *string  `json:"tgl_pengembalian"`
-		DurasiSewa      *int     `json:"durasi_sewa"`
-		Total           *float64 `json:"total"`
-		Jaminan         *string  `json:"jaminan"`
+		IdUser         *int64   `json:"id_user"`
+		IdVehicle      *int64   `json:"id_vehicle"`
+		IdVendor       *int64   `json:"id_vendor"`
+		Status         *string  `json:"status"`
+		BorrowDate     *string  `json:"borrow_date"`
+		ReturnDate     *string  `json:"return_date"`
+		BorrowDuration *int     `json:"borrow_duration"`
+		Total          *float64 `json:"total"`
+		Guarantee      *string  `json:"guarantee"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -153,11 +144,11 @@ func Update(c *gin.Context) {
 	if input.IdUser != nil {
 		updateOrder["id_user"] = *input.IdUser
 	}
-	if input.IdKendaraan != nil {
-		updateOrder["id_kendaraan"] = *input.IdKendaraan
+	if input.IdVehicle != nil {
+		updateOrder["id_vehicle"] = *input.IdVehicle
 	}
-	if input.IdPenyediaJasa != nil {
-		updateOrder["id_penyedia_jasa"] = *input.IdPenyediaJasa
+	if input.IdVendor != nil {
+		updateOrder["id_vendor"] = *input.IdVendor
 	}
 	if input.Status != nil {
 		updateOrder["status"] = *input.Status
@@ -173,20 +164,20 @@ func Update(c *gin.Context) {
 	updateDetail := make(map[string]interface{})
 
 	// Tambahkan hanya nilai-nilai yang tidak nil ke dalam map
-	if input.TglPeminjaman != nil {
-		updateDetail["tgl_peminjaman"] = *input.TglPeminjaman
+	if input.BorrowDate != nil {
+		updateDetail["borrow_date"] = *input.BorrowDate
 	}
-	if input.TglPengembalian != nil {
-		updateDetail["tgl_pengambalian"] = *input.TglPengembalian
+	if input.ReturnDate != nil {
+		updateDetail["return_date"] = *input.ReturnDate
 	}
-	if input.DurasiSewa != nil {
-		updateDetail["durasi_sewa"] = *input.DurasiSewa
+	if input.BorrowDuration != nil {
+		updateDetail["borrow_duration"] = *input.BorrowDuration
 	}
 	if input.Total != nil {
 		updateDetail["total"] = *input.Total
 	}
-	if input.Jaminan != nil {
-		updateDetail["jaminan"] = *input.Jaminan
+	if input.Guarantee != nil {
+		updateDetail["guaranetee"] = *input.Guarantee
 	}
 
 	if err := models.DB.Model(&models.DetailOrder{}).Where("id = ?", id).Updates(updateDetail).Error; err != nil {
@@ -198,7 +189,7 @@ func Update(c *gin.Context) {
 }
 
 func Delete(c *gin.Context) {
-	var input struct{
+	var input struct {
 		Id json.Number
 	}
 
@@ -231,4 +222,3 @@ func Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Data berhasil dihapus"})
 }
-

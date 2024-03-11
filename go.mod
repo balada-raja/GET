@@ -10,6 +10,17 @@ require (
 )
 
 require (
+	github.com/andybalholm/brotli v1.0.0 // indirect
+	github.com/gofiber/utils v0.0.10 // indirect
+	github.com/gorilla/schema v1.1.0 // indirect
+	github.com/klauspost/compress v1.10.7 // indirect
+	github.com/mattn/go-colorable v0.1.7 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/valyala/fasthttp v1.16.0 // indirect
+	github.com/valyala/tcplisten v0.0.0-20161114210144-ceec8f93295a // indirect
+)
+
+require (
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
@@ -19,6 +30,7 @@ require (
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/gofiber/fiber v1.14.6
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect

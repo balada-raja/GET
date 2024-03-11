@@ -14,8 +14,8 @@ func ConnectDatabase() {
 	}
 
 	database.AutoMigrate(&Users{})
-	database.AutoMigrate(&PenyediaJasa{})
-	database.AutoMigrate(&Kendaraan{})
+	database.AutoMigrate(&Vendor{})
+	database.AutoMigrate(&Vehicle{})
 	database.AutoMigrate(&Order{})
 	database.AutoMigrate(&DetailOrder{})
 

@@ -1,22 +1,28 @@
 package models
 
-import(
+import (
+	"strconv"
 	"time"
 )
 
 type DetailOrder struct {
 	Id             int64 `gorm:"primary_key" json:"id"`
-	TglPeminjaman  string `gorm:"type:date; not null" json:"tgl_peminjaman" binding:"required"`
-	TglPengembalian string `gorm:"type:date; not null" json:"tgl_pengembalian" binding:"required"`
-	DurasiSewa     int `gorm:"_" json:"durasi_sewa"`
+	BorrowDate  string `gorm:"type:date; not null" json:"borrow_date" binding:"required"`
+	ReturnDate string `gorm:"type:date; not null" json:"return_date" binding:"required"`
+	BorrowDuration     int `gorm:"_" json:"borrow_duration"`
 	Total float64 `gorm:"double; not null" json:"total"`
-	Jaminan string `gorm:"varchar(255); not null" json:"jaminan" binding:"required"`
+	Guarantee string `gorm:"varchar(255); not null" json:"guarantee" binding:"required"`
 
 }
 
 func (d *DetailOrder) HitungDurasiSewa() {
-	tglPeminjaman, _ := time.Parse("2006-01-02", d.TglPeminjaman)
-	tglPengembalian, _ := time.Parse("2006-01-02", d.TglPengembalian)
-	durasi := tglPengembalian.Sub(tglPeminjaman).Hours() / 24 // Hitung selisih hari
-	d.DurasiSewa = int(durasi)
+    // Parse tanggal peminjaman dan tanggal pengembalian
+    borrowDate, _ := time.Parse("2006-01-02", d.BorrowDate)
+    returnDate, _ := time.Parse("2006-01-02", d.ReturnDate)
+    
+    // Hitung durasi sewa dalam hari
+    durasi := returnDate.Sub(borrowDate).Hours() / 24
+    
+    // Simpan durasi sewa ke dalam properti guarantee
+    d.Guarantee = strconv.Itoa(int(durasi))
 }
