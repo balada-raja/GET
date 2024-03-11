@@ -1,4 +1,4 @@
-package config
+package initializers
 
 import (
 	"github.com/golang-jwt/jwt/v5"

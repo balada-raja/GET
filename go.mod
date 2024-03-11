@@ -11,10 +11,14 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.0 // indirect
+	github.com/fatih/color v1.9.0 // indirect
+	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/githubnemo/CompileDaemon v1.4.0 // indirect
 	github.com/gofiber/utils v0.0.10 // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/klauspost/compress v1.10.7 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect
+	github.com/radovskyb/watcher v1.0.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.16.0 // indirect
 	github.com/valyala/tcplisten v0.0.0-20161114210144-ceec8f93295a // indirect

@@ -1,4 +1,4 @@
-package config
+package initializers
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func LoadEnv() {
+func LoadEnvVariables() {
 	if err := godotenv.Load(".env"); err != nil {
 		log.Fatalf("error load env : %v", err)
 	}

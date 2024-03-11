@@ -1,54 +1,55 @@
 package authcontroller
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"net/http"
 	"time"
 
-	"github.com/balada-raja/GET/helper"
+	"github.com/balada-raja/GET/initializers"
 	"github.com/balada-raja/GET/models"
-	"github.com/balada-raja/GET/pkg/config"
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) {
-	//input json
-	var userInput models.Users
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&userInput); err != nil {
-		response := map[string]string{"message": err.Error()}
-		helper.ResponseJSON(w, http.StatusBadRequest, response)
+func Login(c *gin.Context) {
+	// input email and password
+	var input struct {
+		Email    string
+		Password string
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	defer r.Body.Close()
 
 	//data user berdasarkan email
 	var user models.Users
-	if err := models.DB.Where("email = ?", userInput.Email).First(&user).Error; err != nil {
+	if err := initializers.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			response := map[string]string{"message": "email atau password salah"}
-			helper.ResponseJSON(w, http.StatusUnauthorized, response)
+			c.JSON(http.StatusUnauthorized, response)
 			return
 		default:
 			response := map[string]string{"message": err.Error()}
-			helper.ResponseJSON(w, http.StatusInternalServerError, response)
+			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
 	}
 
 	// cek password
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userInput.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
 		response := map[string]string{"message": "email atau password salah"}
-		helper.ResponseJSON(w, http.StatusUnauthorized, response)
+		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
 
 	//creat jwt
 	expTime := time.Now().Add(time.Minute * 1)
-	claims := &config.JWTClaim{
+	claims := &initializers.JWTClaim{
 		Email: user.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "go-jwt-mux",
@@ -59,55 +60,49 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	//
 	tokenAlgo := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	//signed token
-	token, err := tokenAlgo.SignedString(config.JWT_KEY)
+	token, err := tokenAlgo.SignedString(initializers.JWT_KEY)
 	if err != nil {
 		response := map[string]string{"message": "email atau password salah"}
-		helper.ResponseJSON(w, http.StatusInternalServerError, response)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
 	//set token ke cookie
-	http.SetCookie(w, &http.Cookie{
+	http.SetCookie(c.Writer, &http.Cookie{
 		Name:     "token",
 		Path:     "/",
 		Value:    token,
 		HttpOnly: true,
 	})
 
+
 	response := map[string]string{"message": "Login berhasil"}
-	helper.ResponseJSON(w, http.StatusOK, response)
+	c.JSON(http.StatusOK, response)
+
 }
 
-func Register(w http.ResponseWriter, r *http.Request) {
-	//input json
+func Register(c *gin.Context) {
+	// input json
 	var userInput models.Users
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&userInput); err != nil {
-		response := map[string]string{"message": err.Error()}
-		helper.ResponseJSON(w, http.StatusBadRequest, response)
+
+	if err := c.ShouldBindJSON(&userInput); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	defer r.Body.Close()
 
-	//hash pass bcrypt
+	// hash pass bcrypt
 	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(userInput.Password), bcrypt.DefaultCost)
 	userInput.Password = string(hashPassword)
 
-	//insert database
-	if err := models.DB.Create(&userInput).Error; err != nil {
-		response := map[string]string{"message": err.Error()}
-		helper.ResponseJSON(w, http.StatusInternalServerError, response)
-		return
-	}
-
-	response := map[string]string{"message": "success"}
-	helper.ResponseJSON(w, http.StatusOK, response)
+	//insert
+	initializers.DB.Create(&userInput)
+	c.JSON(http.StatusOK, gin.H{"users": "success"})
 
 }
 
-func Logout(w http.ResponseWriter, r *http.Request) {
+func Logout(c *gin.Context) {
 	//hapus token
-	http.SetCookie(w, &http.Cookie{
+	http.SetCookie(c.Writer, &http.Cookie{
 		Name:     "token",
 		Path:     "/",
 		Value:    "",
@@ -116,5 +111,5 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	})
 
 	response := map[string]string{"message": "Logout berhasil"}
-	helper.ResponseJSON(w, http.StatusOK, response)
+	c.JSON(http.StatusOK, response)
 }

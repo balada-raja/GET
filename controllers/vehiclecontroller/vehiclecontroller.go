@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/balada-raja/GET/initializers"
 	"github.com/balada-raja/GET/models"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -39,7 +40,7 @@ func Create(c *gin.Context) {
 	}
 
 	var PenyediaJasa models.Vendor
-	if err := models.DB.First(&PenyediaJasa, input.IdVendor).Error; err != nil {
+	if err := initializers.DB.First(&PenyediaJasa, input.IdVendor).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "penyedia jasa not found"})
 		return
 	}
@@ -54,14 +55,14 @@ func Create(c *gin.Context) {
 		Price:         input.Price,
 		IdVendor:      input.IdVendor,
 	}
-	models.DB.Create(&vehicle)
+	initializers.DB.Create(&vehicle)
 	c.JSON(http.StatusOK, gin.H{"Message": "data berhasil ditambahkan"})
 }
 
 func Index(c *gin.Context) {
 	var vehicle []models.Vehicle
 
-	models.DB.Select("id, name, vehicle_type, police_number, machine_number, description, status, price, id_vendor").Find(&vehicle)
+	initializers.DB.Select("id, name, vehicle_type, police_number, machine_number, description, status, price, id_vendor").Find(&vehicle)
 
 	// Membuat slice baru untuk menyimpan hasil yang akan dikirimkan sebagai respons JSON
 	var VehicleResponse []output
@@ -88,7 +89,7 @@ func Show(c *gin.Context) {
 	var vehicle models.Vehicle
 	id := c.Param("id")
 
-	if err := models.DB.Select("id, name, vehicle_type").First(&vehicle, id).Error; err != nil {
+	if err := initializers.DB.Select("id, name, vehicle_type").First(&vehicle, id).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Data tidak ditemukan"})
@@ -162,7 +163,7 @@ func Update(c *gin.Context) {
 	updateValues["description"] = *input.Description
 
 	// Perbarui hanya nilai-nilai yang telah ditetapkan
-	if err := models.DB.Model(&models.Vehicle{}).Where("id = ?", id).Updates(updateValues).Error; err != nil {
+	if err := initializers.DB.Model(&models.Vehicle{}).Where("id = ?", id).Updates(updateValues).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Gagal menyimpan perubahan"})
 		return
 	}
@@ -184,7 +185,7 @@ func Delete(c *gin.Context) {
 	}
 
 	id, _ := input.Id.Int64()
-	if models.DB.Delete(&vehicle, id).RowsAffected == 0 {
+	if initializers.DB.Delete(&vehicle, id).RowsAffected == 0 {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Tidak dapat menghapus data"})
 		return
 	}

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/balada-raja/GET/initializers"
 	"github.com/balada-raja/GET/models"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -34,23 +35,23 @@ func Create(c *gin.Context) {
 		Total:          input.Total,
 		Guarantee:      input.Guarantee,
 	}
-	if err := models.DB.Create(&DetailOrder).Error; err != nil {
+	if err := initializers.DB.Create(&DetailOrder).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to create detail order"})
 		return
 	}
 
 	var Users models.Users
-	if err := models.DB.First(&Users, input.IdUser).Error; err != nil {
+	if err := initializers.DB.First(&Users, input.IdUser).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Users not found"})
 		return
 	}
 	var vehicle models.Vehicle
-	if err := models.DB.First(&vehicle, input.IdVehicle).Error; err != nil {
+	if err := initializers.DB.First(&vehicle, input.IdVehicle).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "vehicle not found"})
 		return
 	}
 	var vendor models.Vendor
-	if err := models.DB.First(&vendor, input.IdVendor).Error; err != nil {
+	if err := initializers.DB.First(&vendor, input.IdVendor).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "vendor not found"})
 		return
 	}
@@ -62,9 +63,9 @@ func Create(c *gin.Context) {
 		Status:        models.Informasi(input.Status),
 		IdDetailOrder: DetailOrder.Id,
 	}
-	if err := models.DB.Create(&Order).Error; err != nil {
+	if err := initializers.DB.Create(&Order).Error; err != nil {
 		// jika gagal, hapus entri yang sudah dibuat dalam tabel detail_order
-		models.DB.Delete(&DetailOrder, DetailOrder.Id)
+		initializers.DB.Delete(&DetailOrder, DetailOrder.Id)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to create order"})
 		return
 	}
@@ -74,9 +75,9 @@ func Create(c *gin.Context) {
 func Index(c *gin.Context) {
 	var Order []models.Order
 
-	models.DB.Select("id, id_user, id_vehicle, id_vendor, status").Find(&Order)
+	initializers.DB.Select("id, id_user, id_vehicle, id_vendor, status").Find(&Order)
 
-	if err := models.DB.Preload("DetailOrder").Find(&Order).Error; err != nil {
+	if err := initializers.DB.Preload("DetailOrder").Find(&Order).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to fetch orders"})
 		return
 	}
@@ -103,7 +104,7 @@ func Show(c *gin.Context) {
 	var Order []models.Order
 	id := c.Param("id")
 
-	if err := models.DB.Preload("DetailOrder").First(&Order, id).Error; err != nil {
+	if err := initializers.DB.Preload("DetailOrder").First(&Order, id).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Data tidak ditemukan"})
@@ -155,7 +156,7 @@ func Update(c *gin.Context) {
 	}
 
 	// Perbarui hanya nilai-nilai yang telah ditetapkan
-	if err := models.DB.Model(&models.Order{}).Where("id = ?", id).Updates(updateOrder).Error; err != nil {
+	if err := initializers.DB.Model(&models.Order{}).Where("id = ?", id).Updates(updateOrder).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Gagal menyimpan perubahan Order"})
 		return
 	}
@@ -180,7 +181,7 @@ func Update(c *gin.Context) {
 		updateDetail["guaranetee"] = *input.Guarantee
 	}
 
-	if err := models.DB.Model(&models.DetailOrder{}).Where("id = ?", id).Updates(updateDetail).Error; err != nil {
+	if err := initializers.DB.Model(&models.DetailOrder{}).Where("id = ?", id).Updates(updateDetail).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Gagal menyimpan perubahan Detail Order"})
 		return
 	}
@@ -199,23 +200,23 @@ func Delete(c *gin.Context) {
 	}
 
 	var order models.Order
-	if err := models.DB.First(&order, input.Id).Error; err != nil {
+	if err := initializers.DB.First(&order, input.Id).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Order not found"})
 		return
 	}
 
 	var detailOrder models.DetailOrder
-	if err := models.DB.First(&detailOrder, input.Id).Error; err != nil {
+	if err := initializers.DB.First(&detailOrder, input.Id).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Detail order not found"})
 		return
 	}
 
-	if err := models.DB.Delete(&order).Error; err != nil {
+	if err := initializers.DB.Delete(&order).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete order"})
 		return
 	}
 
-	if err := models.DB.Delete(&detailOrder).Error; err != nil {
+	if err := initializers.DB.Delete(&detailOrder).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete detail order"})
 		return
 	}

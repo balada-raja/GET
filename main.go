@@ -1,30 +1,32 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	// "log"
+	// "net/http"
 
 	"github.com/balada-raja/GET/controllers/authcontroller"
-	"github.com/balada-raja/GET/controllers/vehiclecontroller"
 	"github.com/balada-raja/GET/controllers/ordercontroller"
-	"github.com/balada-raja/GET/controllers/vendorcontroller"
 	"github.com/balada-raja/GET/controllers/userscontroller"
-	"github.com/balada-raja/GET/models"
+	"github.com/balada-raja/GET/controllers/vehiclecontroller"
+	"github.com/balada-raja/GET/controllers/vendorcontroller"
+	"github.com/balada-raja/GET/initializers"
+
+	// "github.com/balada-raja/GET/models"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/mux"
 )
 
+func init() {
+	initializers.LoadEnvVariables()
+	initializers.ConnectDatabase()
+}
+
 func main() {
-	r := mux.NewRouter()
 	rest := gin.Default()
-	models.ConnectDatabase()
 
-	r.HandleFunc("/login", authcontroller.Login).Methods("POST")
-	r.HandleFunc("/register", authcontroller.Register).Methods("POST")
-	r.HandleFunc("/logout", authcontroller.Logout).Methods("GET")
-
-	log.Fatal(http.ListenAndServe(":8080", r))
+	rest.POST("/login", authcontroller.Login)
+	rest.POST("/register", authcontroller.Register)
+	rest.GET("/logout", authcontroller.Logout)
 
 	//route untuk user
 	rest.GET("/api/users", userscontroller.Index)
@@ -54,5 +56,5 @@ func main() {
 	rest.PUT("/api/order/:id", ordercontroller.Update)
 	rest.DELETE("/api/order", ordercontroller.Delete)
 
-	rest.Run()
+	rest.Run(":8080")
 }

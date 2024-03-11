@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/balada-raja/GET/initializers"
 	"github.com/balada-raja/GET/models"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -12,7 +13,7 @@ import (
 func Index(c *gin.Context) {
 	var users []models.Users
 
-	models.DB.Find(&users)
+	initializers.DB.Find(&users)
 	c.JSON(http.StatusOK, gin.H{"users": users})
 }
 
@@ -20,7 +21,7 @@ func Show(c *gin.Context) {
 	var users []models.Users
 	id := c.Param("id")
 
-	if err := models.DB.First(&users, id).Error; err != nil {
+	if err := initializers.DB.First(&users, id).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Data tidak ditemukan"})
@@ -41,7 +42,7 @@ func Create(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	models.DB.Create(&users)
+	initializers.DB.Create(&users)
 	c.JSON(http.StatusOK, gin.H{"users": users})
 
 }
@@ -54,7 +55,7 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	if models.DB.Model(&users).Where("id = ?", id).Updates(&users).RowsAffected == 0 {
+	if initializers.DB.Model(&users).Where("id = ?", id).Updates(&users).RowsAffected == 0 {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Tidak dapat mengupadate users"})
 		return
 	}
@@ -75,7 +76,7 @@ func Delete(c *gin.Context) {
 	}
 
 	id, _ := input.Id.Int64()
-	if models.DB.Delete(&users, id).RowsAffected == 0 {
+	if initializers.DB.Delete(&users, id).RowsAffected == 0 {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Tidak dapat menghapus users"})
 		return
 	}
