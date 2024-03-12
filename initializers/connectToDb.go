@@ -6,19 +6,11 @@ import (
 	"github.com/balada-raja/GET/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-
-	"github.com/joho/godotenv"
 )
 
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		panic("Error loading .env file")
-	}
-
 	// Get database credentials from environment variables
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")

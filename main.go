@@ -1,8 +1,6 @@
 package main
 
 import (
-	// "log"
-	// "net/http"
 
 	"github.com/balada-raja/GET/controllers/authcontroller"
 	"github.com/balada-raja/GET/controllers/ordercontroller"
@@ -23,7 +21,6 @@ func main() {
 
 	rest.POST("/login", authcontroller.Login)
 	rest.POST("/register", authcontroller.Register)
-	rest.GET("/validate", authcontroller.Validate)
 	rest.GET("/logout", authcontroller.Logout)
 
 	//route untuk penyedia jasa

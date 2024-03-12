@@ -2,6 +2,7 @@ package authcontroller
 
 import (
 	// "encoding/json"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -118,4 +119,40 @@ func Logout(c *gin.Context) {
 
 	response := map[string]string{"message": "Logout berhasil"}
 	c.JSON(http.StatusOK, response)
+}
+
+func Update(c *gin.Context) {
+	var users models.Users
+	id := c.Param("id")
+	if err := c.ShouldBindJSON(&users); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	if initializers.DB.Model(&users).Where("id = ?", id).Updates(&users).RowsAffected == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Tidak dapat mengupadate users"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Data berhasil diperbarui"})
+}
+
+func Delete(c *gin.Context) {
+	var users models.Users
+
+	var input struct {
+		Id json.Number
+	}
+
+	//input := map[string]string{"Id": "0"}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	id, _ := input.Id.Int64()
+	if initializers.DB.Delete(&users, id).RowsAffected == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Tidak dapat menghapus users"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Data berhasil dihapus"})
 }
