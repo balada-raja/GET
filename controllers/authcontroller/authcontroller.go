@@ -100,6 +100,12 @@ func Register(c *gin.Context) {
 
 }
 
+func Validate(c  *gin.Context){
+	user, _ := c.Get("user")
+
+	c.JSON(http.StatusOK, gin.H{"message": user})
+}
+
 func Logout(c *gin.Context) {
 	//hapus token
 	http.SetCookie(c.Writer, &http.Cookie{

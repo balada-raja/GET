@@ -6,12 +6,9 @@ import (
 
 	"github.com/balada-raja/GET/controllers/authcontroller"
 	"github.com/balada-raja/GET/controllers/ordercontroller"
-	"github.com/balada-raja/GET/controllers/userscontroller"
 	"github.com/balada-raja/GET/controllers/vehiclecontroller"
 	"github.com/balada-raja/GET/controllers/vendorcontroller"
 	"github.com/balada-raja/GET/initializers"
-
-	// "github.com/balada-raja/GET/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,14 +23,8 @@ func main() {
 
 	rest.POST("/login", authcontroller.Login)
 	rest.POST("/register", authcontroller.Register)
+	rest.GET("/validate", authcontroller.Validate)
 	rest.GET("/logout", authcontroller.Logout)
-
-	//route untuk user
-	rest.GET("/api/users", userscontroller.Index)
-	rest.GET("/api/users/:id", userscontroller.Show)
-	// rest.POST("/api/users", userscontroller.Create)
-	rest.PUT("/api/users/:id", userscontroller.Update)
-	rest.DELETE("/api/users/:id", userscontroller.Delete)
 
 	//route untuk penyedia jasa
 	rest.GET("/api/vendor", vendorcontroller.Index)

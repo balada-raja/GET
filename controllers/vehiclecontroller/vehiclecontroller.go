@@ -24,14 +24,14 @@ type output struct {
 
 func Create(c *gin.Context) {
 	var input struct {
-		Name          string  `json:"name"`
-		VehicleType   string  `json:"vehicle_type"`
-		PoliceNumber  string  `json:"police_number"`
-		MachineNumber string  `json:"machine_number"`
+		Name          string  `json:"name" binding:"required"`
+		VehicleType   string  `json:"vehicle_type" binding:"required"`
+		PoliceNumber  string  `json:"police_number" binding:"required"`
+		MachineNumber string  `json:"machine_number" binding:"required"`
 		Description   string  `json:"description"`
-		Status        string  `json:"status"`
-		Price         float64 `json:"price"`
-		IdVendor      int64   `json:"id_vendor"`
+		Status        string  `json:"status" binding:"required"`
+		Price         float64 `json:"price" binding:"required"`
+		IdVendor      int64   `json:"id_vendor" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
