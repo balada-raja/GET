@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 
 	"github.com/balada-raja/GET/controllers/authcontroller"
 	"github.com/balada-raja/GET/controllers/ordercontroller"
@@ -33,6 +35,9 @@ func main() {
 	//route untuk kendaraan
 	rest.GET("/api/vehicle", vehiclecontroller.Index)
 	rest.GET("/api/vehicle/:id", vehiclecontroller.Show)
+	rest.GET("/api/vehicle/name", vehiclecontroller.FindVehicleByName)
+	rest.GET("/api/vehicle/vehicle_type", vehiclecontroller.FindVehicleByVehicleType)
+	rest.GET("/api/vehicle/transmission", vehiclecontroller.FindVehicleByTransmission)
 	rest.POST("/api/vehicle", vehiclecontroller.Create)
 	rest.PUT("/api/vehicle/:id", vehiclecontroller.Update)
 	rest.DELETE("/api/vehicle", vehiclecontroller.Delete)
@@ -44,5 +49,10 @@ func main() {
 	rest.PUT("/api/order/:id", ordercontroller.Update)
 	rest.DELETE("/api/order", ordercontroller.Delete)
 
-	rest.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "5000"
+	}
+	
+	rest.Run(fmt.Sprintf(":%s", port))
 }

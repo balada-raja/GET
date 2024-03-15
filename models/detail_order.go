@@ -12,7 +12,6 @@ type DetailOrder struct {
 	BorrowDuration     int `gorm:"_" json:"borrow_duration"`
 	Total float64 `gorm:"double; not null" json:"total"`
 	Guarantee string `gorm:"varchar(255); not null" json:"guarantee" binding:"required"`
-
 }
 
 func (d *DetailOrder) HitungDurasiSewa() {

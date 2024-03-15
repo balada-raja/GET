@@ -82,21 +82,6 @@ func Index(c *gin.Context) {
 		return
 	}
 
-	// // Membuat slice baru untuk menyimpan hasil yang akan dikirimkan sebagai respons JSON
-	// var orderresponse []output
-
-	// // Mengisi slice baru dengan data yang sesuai
-	// for _, o := range Order {
-	// 	orderresponse = append(orderresponse, output{
-	// 		Id:             o.Id,
-	// 		IdUser:         o.IdUser,
-	// 		IdKendaraan:    o.IdKendaraan,
-	// 		IdPenyediaJasa: o.IdPenyediaJasa,
-	// 		Status:         string(o.Status),
-	// 		IdDetailOrder:  o.IdDetailOrder,
-	// 	})
-	// }
-
 	c.JSON(http.StatusOK, gin.H{"Message": Order})
 }
 
