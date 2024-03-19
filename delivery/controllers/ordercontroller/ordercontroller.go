@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/balada-raja/GET/initializers"
+	"github.com/balada-raja/GET/repository/initializers"
 	"github.com/balada-raja/GET/models"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

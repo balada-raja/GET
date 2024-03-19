@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/balada-raja/GET/initializers"
 	"github.com/balada-raja/GET/models"
+	"github.com/balada-raja/GET/repository/initializers"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -31,7 +31,7 @@ func Login(c *gin.Context) {
 	if err := initializers.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
-			response := map[string]string{"message": "email atau password salah"}
+			response := map[string]string{"message": "email salah"}
 			c.JSON(http.StatusUnauthorized, response)
 			return
 		default:
@@ -43,13 +43,13 @@ func Login(c *gin.Context) {
 
 	// cek password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-		response := map[string]string{"message": "email atau password salah"}
+		response := map[string]string{"message": "password salah"}
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
 
 	//creat jwt
-	expTime := time.Now().Add(time.Minute * 1)
+	expTime := time.Now().Add(time.Minute * 30)
 	claims := &initializers.JWTClaim{
 		Email: user.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -61,25 +61,15 @@ func Login(c *gin.Context) {
 	//
 	tokenAlgo := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	//signed token
-	token, err := tokenAlgo.SignedString(initializers.JWT_KEY)
+	tokenString, err := tokenAlgo.SignedString(initializers.JWT_KEY)
 	if err != nil {
-		response := map[string]string{"message": "email atau password salah"}
+		response := map[string]string{"message": err.Error()}
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	//set token ke cookie
-	http.SetCookie(c.Writer, &http.Cookie{
-		Name:     "token",
-		Path:     "/",
-		Value:    token,
-		HttpOnly: true,
-	})
-
-
-	response := map[string]string{"message": "Login berhasil"}
-	c.JSON(http.StatusOK, response)
-
+	//set token
+	c.JSON(http.StatusOK, gin.H{"message": tokenString})
 }
 
 func Register(c *gin.Context) {
@@ -101,7 +91,7 @@ func Register(c *gin.Context) {
 
 }
 
-func Validate(c  *gin.Context){
+func Validate(c *gin.Context) {
 	user, _ := c.Get("user")
 
 	c.JSON(http.StatusOK, gin.H{"message": user})
