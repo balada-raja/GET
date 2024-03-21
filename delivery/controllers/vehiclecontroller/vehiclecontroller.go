@@ -3,6 +3,7 @@ package vehiclecontroller
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/balada-raja/GET/delivery/helper"
 	"github.com/balada-raja/GET/models"
@@ -234,3 +235,34 @@ func FindVehicleByTransmission(c *gin.Context) {
 
 	c.JSON(http.StatusOK, VehicleResponse)
 }
+
+func FindVehicleByPriceRange(c *gin.Context) {
+	var vehicle []models.Vehicle
+
+	// Mengambil rentang harga dari query string
+	minPriceStr := c.Query("min_price")
+	maxPriceStr := c.Query("max_price")
+
+	// Mengonversi rentang harga menjadi tipe data yang sesuai
+	minPrice, err := strconv.ParseFloat(minPriceStr, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid min_price"})
+		return
+	}
+
+	maxPrice, err := strconv.ParseFloat(maxPriceStr, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid max_price"})
+		return
+	}
+
+	if err := initializers.DB.Where("price BETWEEN ? AND ?", minPrice, maxPrice).Find(&vehicle).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	VehicleResponse := helper.ResponseOutput(vehicle)
+
+	c.JSON(http.StatusOK, VehicleResponse)
+}
+

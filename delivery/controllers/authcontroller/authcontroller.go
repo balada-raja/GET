@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	// "github.com/balada-raja/GET/delivery/middlewares"
 	"github.com/balada-raja/GET/models"
 	"github.com/balada-raja/GET/repository/initializers"
 	"github.com/gin-gonic/gin"
@@ -57,8 +58,6 @@ func Login(c *gin.Context) {
 			ExpiresAt: jwt.NewNumericDate(expTime),
 		},
 	}
-
-	//
 	tokenAlgo := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	//signed token
 	tokenString, err := tokenAlgo.SignedString(initializers.JWT_KEY)
@@ -98,17 +97,11 @@ func Validate(c *gin.Context) {
 }
 
 func Logout(c *gin.Context) {
-	//hapus token
-	http.SetCookie(c.Writer, &http.Cookie{
-		Name:     "token",
-		Path:     "/",
-		Value:    "",
-		HttpOnly: true,
-		MaxAge:   -1,
-	})
+	// Hapus token dengan menghapus cookie yang menyimpan token
+	c.SetCookie("token", "", -1, "/", "", false, true)
 
-	response := map[string]string{"message": "Logout berhasil"}
-	c.JSON(http.StatusOK, response)
+	// Berikan respons bahwa logout berhasil
+	c.JSON(http.StatusOK, gin.H{"message": "Logout berhasil"})
 }
 
 func Update(c *gin.Context) {

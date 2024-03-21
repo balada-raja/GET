@@ -18,7 +18,7 @@ func Create(c *gin.Context) {
 		return
 	}
 	initializers.DB.Create(&vendor)
-	c.JSON(http.StatusOK, gin.H{"vendor": vendor})
+	c.JSON(http.StatusOK, gin.H{"vendor": "success"})
 
 }
 
