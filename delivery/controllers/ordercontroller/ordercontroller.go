@@ -142,7 +142,7 @@ func Update(c *gin.Context) {
 
 	// Perbarui hanya nilai-nilai yang telah ditetapkan
 	if err := initializers.DB.Model(&models.Order{}).Where("id = ?", id).Updates(updateOrder).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Gagal menyimpan perubahan Order"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -163,11 +163,11 @@ func Update(c *gin.Context) {
 		updateDetail["total"] = *input.Total
 	}
 	if input.Guarantee != nil {
-		updateDetail["guaranetee"] = *input.Guarantee
+		updateDetail["guarantee"] = *input.Guarantee
 	}
 
 	if err := initializers.DB.Model(&models.DetailOrder{}).Where("id = ?", id).Updates(updateDetail).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Gagal menyimpan perubahan Detail Order"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -197,12 +197,12 @@ func Delete(c *gin.Context) {
 	}
 
 	if err := initializers.DB.Delete(&order).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete order"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
 	if err := initializers.DB.Delete(&detailOrder).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete detail order"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 

@@ -153,7 +153,7 @@ func Update(c *gin.Context) {
 		updateValues["status"] = *input.Status
 	}
 	if input.Price != nil {
-		updateValues["harga"] = *input.Price
+		updateValues["price"] = *input.Price
 	}
 	if input.IdVendor != nil {
 		updateValues["id_vendor"] = *input.IdVendor
@@ -163,7 +163,7 @@ func Update(c *gin.Context) {
 
 	// Perbarui hanya nilai-nilai yang telah ditetapkan
 	if err := initializers.DB.Model(&models.Vehicle{}).Where("id = ?", id).Updates(updateValues).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Gagal menyimpan perubahan"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -193,10 +193,10 @@ func Delete(c *gin.Context) {
 
 func FindVehicleByName(c *gin.Context) {
 	var vehicle []models.Vehicle
-	query := c.Query("query")
+	name := c.Query("name")
 
 	// Melakukan pencarian kendaraan berdasarkan query
-	if err := initializers.DB.Where("name = ?", query).Find(&vehicle).Error; err != nil {
+	if err := initializers.DB.Where("name = ?", name).Find(&vehicle).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -208,10 +208,10 @@ func FindVehicleByName(c *gin.Context) {
 
 func FindVehicleByVehicleType(c *gin.Context) {
 	var vehicle []models.Vehicle
-	query := c.Query("query")
+	vehicle_type := c.Query("vehicle_type")
 
 	// Melakukan pencarian kendaraan berdasarkan query
-	if err := initializers.DB.Where("vehicle_type = ?", query).Find(&vehicle).Error; err != nil {
+	if err := initializers.DB.Where("vehicle_type = ?", vehicle_type).Find(&vehicle).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -223,10 +223,10 @@ func FindVehicleByVehicleType(c *gin.Context) {
 
 func FindVehicleByTransmission(c *gin.Context) {
 	var vehicle []models.Vehicle
-	query := c.Query("query")
+	transmission := c.Query("transmission")
 
 	// Melakukan pencarian kendaraan berdasarkan query
-	if err := initializers.DB.Where("transmission = ?", query).Find(&vehicle).Error; err != nil {
+	if err := initializers.DB.Where("transmission = ?", transmission).Find(&vehicle).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -265,4 +265,3 @@ func FindVehicleByPriceRange(c *gin.Context) {
 
 	c.JSON(http.StatusOK, VehicleResponse)
 }
-
