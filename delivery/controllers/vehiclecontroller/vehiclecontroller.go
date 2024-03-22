@@ -37,25 +37,25 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	// Get file from request
-	file, err := c.FormFile("image")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to upload file"})
-		return
-	}
+	// // Get file from request
+	// file, err := c.FormFile("image")
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to upload file"})
+	// 	return
+	// }
 
-	// Validate file type
-	if !helper.IsImageFile(file) {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid file type. Please upload an image file"})
-		return
-	}
+	// // Validate file type
+	// if !helper.IsImageFile(file) {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid file type. Please upload an image file"})
+	// 	return
+	// }
 
-	// Save uploaded file
-	imagePath, err := helper.SaveUploadedFile(file)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to save uploaded file"})
-		return
-	}
+	// // Save uploaded file
+	// imagePath, err := helper.SaveUploadedFile(file)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to save uploaded file"})
+	// 	return
+	// }
 
 	// var specifications []string
 	// if err := json.Unmarshal(input.Specification, &specifications); err != nil {
@@ -73,14 +73,14 @@ func Create(c *gin.Context) {
 		Price:         input.Price,
 		Transmission:  models.Transmission(input.Transmission),
 		// Specifications: specifications,
-		Image:    imagePath,
+		//Image:    imagePath,
 		IdVendor: input.IdVendor,
 	}
 	if err := initializers.DB.Create(&vehicle).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"Message": vehicle})
+	c.JSON(http.StatusOK, gin.H{"vehicle": "success"})
 }
 
 func Index(c *gin.Context) {

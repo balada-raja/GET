@@ -27,7 +27,7 @@ type Vehicle struct {
 	Price         float64      `gorm:"type:double; not null" json:"price" binding:"required"`
 	Transmission  Transmission `gorm:"type:enum('Manual','Matic'); not null" json:"transmission" binding:"required"`
 	//Specifications []string     `gorm:"type:json" json:"specifications"`
-	Image   string `json:"image" form:"image"`
+	//Image   string `json:"image" form:"image"`
 	IdVendor int64  `json:"id_vendor" binding:"required"`
 
 	Vendor Vendor `gorm:"foreignKey:id_vendor"`

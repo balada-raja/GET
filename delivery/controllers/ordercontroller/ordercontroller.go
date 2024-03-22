@@ -69,7 +69,7 @@ func Create(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Failed to create order"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"Message": "Kendaraan berhasil ditambahkan"})
+	c.JSON(http.StatusOK, gin.H{"order": "success"})
 }
 
 func Index(c *gin.Context) {
